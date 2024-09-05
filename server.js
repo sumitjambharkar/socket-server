@@ -15,7 +15,7 @@ const server = http.createServer(app);
 // Attach Socket.IO to the server
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // Replace with the origin of your client app
+    origin: ["http://localhost:5173","https://onehealthassist.com"],
     methods: ["GET", "POST"],
   }
 });
