@@ -1,7 +1,7 @@
-const express = require('express');
-const { Server } = require('socket.io');
-const cors = require('cors');
-const http = require('http');
+const express = require("express");
+const { Server } = require("socket.io");
+const cors = require("cors");
+const http = require("http");
 
 // Initialize Express app
 const app = express();
@@ -17,20 +17,20 @@ const io = new Server(server, {
   cors: {
     origin: ["http://localhost:5173", "https://onehealthassist.com"],
     methods: ["GET", "POST"],
-  }
+  },
 });
 
 // Setup a basic route
-app.get('/', (req, res) => {
-  res.send('Hello, world!');
+app.get("/", (req, res) => {
+  res.send("Hello, world!");
 });
 
 const emailToSocketMapping = new Map();
 const socketIdToEmailMapping = new Map();
 
 // Setup Socket.IO connection event
-io.on('connection', (socket) => {
-  console.log('A user connected');
+io.on("connection", (socket) => {
+  console.log("A user connected");
 
   socket.on("join-room", (data) => {
     const { email, userId } = data;
@@ -69,12 +69,17 @@ io.on('connection', (socket) => {
     io.to(to).emit("callEnded");
   });
 
+  // Handle Video Mute/Unmute Event
+  socket.on("muteVideo", ({ to, videoEnabled }) => {
+    io.to(to).emit("remoteVideo", { videoEnabled });
+  });
+
   // Handle disconnection
-  socket.on('disconnect', () => {
+  socket.on("disconnect", () => {
     const email = socketIdToEmailMapping.get(socket.id);
     emailToSocketMapping.delete(email);
     socketIdToEmailMapping.delete(socket.id);
-    console.log('A user disconnected');
+    console.log("A user disconnected");
   });
 });
 
